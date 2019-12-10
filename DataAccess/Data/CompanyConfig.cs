@@ -13,7 +13,7 @@ namespace DataAccess.Data
         {
             builder.HasKey(c=>c.Id);
 
-            builder.Property(c => c.Ticker).HasMaxLength(20);
+            builder.Property(c => c.ISIN).HasMaxLength(20);
 
             builder.Property(c => c.Name).HasMaxLength(255);
 

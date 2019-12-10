@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataAccess.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 
 namespace CompanyRecords.Controllers
 {
@@ -11,18 +13,37 @@ namespace CompanyRecords.Controllers
     [ApiController]
     public class CompanyController : ControllerBase
     {
+        private readonly ICompanyService _companyService;
+
+        public  CompanyController(ICompanyService companyService)
+        {
+            _companyService = companyService;
+            
+        }
+
         // GET: api/Company
         [HttpGet]
-        public IActionResult  Get()
+        public IActionResult  GetCompanies()
         {
             return Ok(new string[] { "value1", "value2" });
         }
 
         // GET: api/Company/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [HttpPost]
+        public async Task<IActionResult> CreateCompany([FromBody]Company company)
         {
-            return "value";
+            try
+            {
+                await _companyService.CreateCompany(company);
+
+                return Ok(company);
+            }
+            catch (Exception e) {
+
+                throw e;
+            }
+
+            
         }
 
         // POST: api/Company
