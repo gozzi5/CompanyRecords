@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,7 +36,7 @@ namespace CompanyRecords
            options.UseSqlServer(Configuration.GetConnectionString("CompanyRecordContext")));
 
             //company services
-            services.AddTransient<ICompanyService, CompanyService>();
+            services.AddScoped<ICompanyService, CompanyService>();
 
 
 
@@ -92,6 +92,27 @@ namespace CompanyRecords
                 context.Database.Migrate();
               
             }
+
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.Use(async (context, next) =>
+            {
+
+                await next();
+
+                if (context.Response.StatusCode == 404
+                && !Path.HasExtension(context.Request.Path.Value))
+                {
+
+                    context.Request.Path = "/index.html";
+                    await next();
+                }
+               
+
+            });
 
             app.UseStaticFiles();
             

@@ -6,6 +6,7 @@ using DataAccess.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.ViewModels;
 
 namespace CompanyRecords.Controllers
 {
@@ -21,16 +22,35 @@ namespace CompanyRecords.Controllers
             
         }
 
-        // GET: api/Company
+        /// <summary>
+        /// /Get companies
+        /// </summary>
+        /// <returns>list of companies</returns>
         [HttpGet]
-        public IActionResult  GetCompanies()
+        public async Task<IActionResult> GetCompanies()
         {
-            return Ok(new string[] { "value1", "value2" });
+
+            try
+            {
+                var companies  = await _companyService.GetCompanys();
+
+                return Ok(companies);
+            }
+            catch (Exception e) {
+
+                throw e;
+
+            }
+           
         }
 
-        // GET: api/Company/5
+       /// <summary>
+       /// Creates a Company
+       /// </summary>
+       /// <param name="company"></param>
+       /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> CreateCompany([FromBody]Company company)
+        public async Task<IActionResult> CreateCompany([FromBody]CompanyViewModel company)
         {
             try
             {
@@ -46,22 +66,69 @@ namespace CompanyRecords.Controllers
             
         }
 
-        // POST: api/Company
-        [HttpPost]
-        public void Post([FromBody] string value)
+
+        /// <summary>
+        /// Update company
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="value"></param>
+        [HttpPut]
+        public IActionResult UpdateCompany([FromBody] CompanyViewModel company)
         {
+            try
+            {
+
+                _companyService.UpdateCompany(company);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
 
-        // PUT: api/Company/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+       /// <summary>
+       /// Get CompanyById
+       /// </summary>
+       /// <param name="id"></param>
+       /// <returns>Company</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetCompanyById(int id)
         {
-        }
+            try
+            {
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+             var company =  await _companyService.GetCompanyById(id);
+
+             return Ok(company);
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+        /// <summary>
+        /// Gets Company isin string
+        /// </summary>
+        /// <param name="isin"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetCompanyById(string isin)
         {
+            try
+            {
+                var company = await _companyService.GetCompanyByIsin(isin);
+
+                return Ok(company);
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
     }
 }

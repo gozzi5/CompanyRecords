@@ -1,4 +1,5 @@
 ﻿using DataAccess.Data;
+using Services.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,13 +9,13 @@ namespace Services
 {
     public interface  ICompanyService
     {
-        Task<Company> CreateCompany(Company company);
-            IEnumerable<Company> GetCompanys();
+        Task<CompanyViewModel> CreateCompany(CompanyViewModel company);
+        Task<List<CompanyViewModel>> GetCompanys();
 
-            IEnumerable<Company> UpdateCompany(Company company);
+        void UpdateCompany(CompanyViewModel company);
 
-         Task<Company> GetCompanyByIsin(string isin);
+        Task<CompanyViewModel> GetCompanyByIsin(string isin);
 
-            IEnumerable<Company> GetCompanyById(int id);
+        Task<CompanyViewModel> GetCompanyById(int id);
     }
 }

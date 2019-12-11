@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DataAccess;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using Services.ViewModels;
 
 namespace Services
 {
@@ -16,35 +17,94 @@ namespace Services
             _context = context;
 
         }
-        public IEnumerable<Company> GetCompanyById(int id)
-        {
-            throw new NotImplementedException();
-        }
+      
 
-        public async Task<Company> CreateCompany(Company company) {
+        public async Task<CompanyViewModel> CreateCompany(CompanyViewModel companyVm) {
 
-           
+            Company company =  MappingToCompany(companyVm);
+
             _context.Company.Add(company);
              await _context.SaveChangesAsync();
 
-            return company;
+            return MappingToViewModel(company);
         }
-        public async Task<Company> GetCompanyByIsin(string isin)
+        public async Task<CompanyViewModel> GetCompanyByIsin(string isin)
         {
-            
 
-           return await _context.Company.FindAsync(isin);
-            
-        }
+            Company company = await _context.Company.FindAsync();
 
-        public IEnumerable<Company> GetCompanys()
-        {
-            throw new NotImplementedException();
+            return MappingToViewModel(company);
         }
 
-        public IEnumerable<Company> UpdateCompany(Company company)
+        public async Task<CompanyViewModel> GetCompanyById(int id)
         {
-            throw new NotImplementedException();
+
+            Company company = await _context.Company.FindAsync(id);
+
+            return MappingToViewModel(company);
+        }
+
+        public async Task<List<CompanyViewModel>> GetCompanys()
+        {
+            List<Company> companys = await _context.Company.ToListAsync();
+
+
+            return MappingToListViewModel(companys);
+        }
+
+        public  void UpdateCompany(CompanyViewModel companyVm)
+        {
+
+          Company company =  _context.Company.Find(companyVm.Id);
+
+            if (company != null)
+            {
+                _context.Update(company);
+
+                _context.SaveChanges();
+            }
+        }
+
+        private  Company  MappingToCompany(CompanyViewModel companyVm) {
+
+
+            return  new Company
+            {
+                ISIN = companyVm.ISIN,
+                Ticker = companyVm.Ticker,
+                Name = companyVm.Name,
+                WebSite = companyVm.WebSite
+            };
+        }
+        private CompanyViewModel MappingToViewModel(Company company)
+        {
+
+
+            return new CompanyViewModel
+            {
+                ISIN = company.ISIN,
+                Ticker = company.Ticker,
+                Name = company.Name,
+                WebSite = company.WebSite
+            };
+        }
+
+        private List<CompanyViewModel> MappingToListViewModel(List<Company> companys)
+        {
+            List<CompanyViewModel> companyViewModels = new List<CompanyViewModel>();
+            foreach (var company in companys)
+            {
+                CompanyViewModel companyVm = new CompanyViewModel
+                {
+                    ISIN = company.ISIN,
+                    Ticker = company.Ticker,
+                    Name = company.Name,
+                    WebSite = company.WebSite
+                };
+                companyViewModels.Add(companyVm);
+            }
+
+            return companyViewModels;
         }
     }
 }
