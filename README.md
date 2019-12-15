@@ -17,3 +17,10 @@ Developed with Angular. no need to run the angular project as it has already bee
 To run the frontend seperate please check the read me in the output folder.
 
 # Run with visual studio. 
+
+
+
+# Example home page
+
+![GitHub Logo](homepage.png)
+Format: ![Alt Text](url)
