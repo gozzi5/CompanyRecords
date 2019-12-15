@@ -54,9 +54,10 @@ namespace CompanyRecords.Controllers
         {
             try
             {
-                await _companyService.CreateCompany(company);
+               
+                var res  = await _companyService.CreateCompany(company);
 
-                return Ok(company);
+                return Ok(res);
             }
             catch (Exception e) {
 
@@ -73,14 +74,14 @@ namespace CompanyRecords.Controllers
         /// <param name="id"></param>
         /// <param name="value"></param>
         [HttpPut]
-        public IActionResult UpdateCompany([FromBody] CompanyViewModel company)
+        public async Task<IActionResult> UpdateCompany([FromBody] CompanyViewModel company)
         {
             try
             {
 
-                _companyService.UpdateCompany(company);
+               var res =  await _companyService.UpdateCompany(company);
 
-                return Ok();
+                return Ok(res);
             }
             catch (Exception e)
             {
@@ -100,9 +101,9 @@ namespace CompanyRecords.Controllers
             try
             {
 
-             var company =  await _companyService.GetCompanyById(id);
+             var response =  await _companyService.GetCompanyById(id);
 
-             return Ok(company);
+             return Ok(response);
             }
             catch (Exception e)
             {
@@ -116,13 +117,13 @@ namespace CompanyRecords.Controllers
         /// <param name="isin"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetCompanyById(string isin)
+        public async Task<IActionResult> GetCompanyByIsin(string isin)
         {
             try
             {
-                var company = await _companyService.GetCompanyByIsin(isin);
-
-                return Ok(company);
+                var response = await _companyService.GetCompanyByIsin(isin);
+            
+                return Ok(response);
             }
             catch (Exception e)
             {

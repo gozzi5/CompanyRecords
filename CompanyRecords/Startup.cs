@@ -29,6 +29,7 @@ namespace CompanyRecords
 
         public IConfiguration Configuration { get; }
 
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -68,15 +69,36 @@ namespace CompanyRecords
                  };
              });
 
+            services.AddCors(options =>
+            {
+                
+                options.AddPolicy(MyAllowSpecificOrigins,
+                   
+
+            builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200");
+                    builder.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+                });
+            });
+
             services.AddAuthorization();
+
             services.AddControllers().AddNewtonsoftJson(); 
+
             services.AddMvc();
+
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
 
             services.AddResponseCompression();
+
+      
+
         }
 
-    
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -84,6 +106,8 @@ namespace CompanyRecords
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                app.UseCors(MyAllowSpecificOrigins);
             }
 
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
@@ -94,6 +118,8 @@ namespace CompanyRecords
             }
 
 
+
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();

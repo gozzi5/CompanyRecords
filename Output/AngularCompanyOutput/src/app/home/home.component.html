@@ -1,0 +1,54 @@
+
+
+<div class="container">
+
+  <div class="row">
+    <div class="col-auto mb-2 mt-2" style="margin: 0 auto;">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Enter Isin" [(ngModel)]="isin">
+    </mat-form-field>
+    <button class="m-2" (click)="getCompanieByIsin()" mat-raised-button color="primary">Search</button>
+    </div>
+  </div>
+
+    <div class="row">
+      <div class="col-auto mb-2 mt-2" style="margin: 0 auto;"><button [routerLink]="'/company/new'" mat-raised-button color="primary">Create Company</button></div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-auto mb-2 mt-2" style="margin: 0 auto;"><h4> Company records list</h4></div>
+    </div>
+
+
+
+
+
+
+    <div class="row">
+      <table class="container-table">
+        <thead>
+          <tr>
+            <th><h1>Company </h1></th>
+            <th><h1>ISIN</h1></th>
+            <th><h1>Ticker</h1></th>
+            <th><h1>Web Url</h1></th>
+            <th><h1>Exchange</h1></th>
+            <th><h1>View</h1></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of companies.results; let i = index">
+            <td>{{item.name}}</td>
+            <td>{{item.isin}}</td>
+            <td>{{item.ticker}}</td>
+            <td>{{item.webSite}}</td>
+            <td>{{item.exchange}}</td>
+
+            <td style="cursor:pointer;" [routerLink]="'/company/'+item.id+'/view'"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z" /><path d="M16.01 11H4v2h12.01v3L20 12l-3.99-4z" /></svg></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>

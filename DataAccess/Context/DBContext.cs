@@ -12,8 +12,9 @@ namespace DataAccess
         { }
 
 
+        public CompanyRecordsDBContext() { }
 
-        public DbSet<Company> Company { get; set; }
+        public virtual DbSet<Company> Company { get; set; }
 
 
 

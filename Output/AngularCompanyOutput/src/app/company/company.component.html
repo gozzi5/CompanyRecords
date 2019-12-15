@@ -1,0 +1,119 @@
+
+  <div class="container">
+    <div class="row">
+      <div class="col-auto mb-2 mt-2" style="margin: 0 auto;">
+        <button [routerLink]="'/'" mat-raised-button color="primary">Back to Dashboard</button>
+      </div>
+    </div>
+
+
+    <div class="container-table clean-box">
+
+      <div class="form-group">
+        <label for="companyName">Company Name </label>
+        <input [(ngModel)]="company.name"
+               #name="ngModel"
+               ngModel
+               type="text"
+               required minlength="4"
+               class="form-control"
+               id="companyName"
+               aria-describedby="companyName"
+               placeholder="Company Name">
+
+      </div>
+
+      <div *ngIf="name.invalid && (name.dirty || name.touched)"
+           class="alert alert-danger">
+
+        <div *ngIf="name.errors.required">
+          Name is required.
+        </div>
+        <div *ngIf="name.errors.minlength">
+          Name must be at least 4 characters long.
+        </div>
+      </div>
+
+
+
+
+      <div class="form-group">
+        <label for="isin">ISIN</label>
+        <input [(ngModel)]="company.isin"
+               #isin="ngModel"
+               type="text"
+               required
+               class="form-control"
+               id="isin"
+               placeholder="ISIN">
+      </div>
+      <div *ngIf="isin.invalid && (isin.dirty || isin.touched)"
+           class="alert alert-danger">
+
+        <div *ngIf="isin.errors.required">
+          ISIN is required.
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label for="ticker">Ticker</label>
+        <input [(ngModel)]="company.ticker"
+               #ticker="ngModel"
+               type="text"
+               required
+               class="form-control"
+               id="ticker"
+               placeholder="Ticker">
+      </div>
+
+      <div *ngIf="ticker.invalid && (ticker.dirty || ticker.touched)"
+           class="alert alert-danger">
+
+        <div *ngIf="ticker.errors.required">
+          ticker is required.
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label for="webUrl">Web Url</label>
+        <input [(ngModel)]="company.url"
+               type="text"
+               #webUrl="ngModel"
+               class="form-control"
+               id="webUrl"
+               placeholder="Web url">
+      </div>
+      <div *ngIf="webUrl.invalid && (webUrl.dirty || webUrl.touched)"
+           class="alert alert-danger">
+
+        <div *ngIf="webUrl.errors.required">
+          webUrl is required.
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label for="exchange">Exchange</label>
+        <input [(ngModel)]="company.exchange"
+               type="text"
+               required
+               #exchange="ngModel"
+               class="form-control"
+               id="exchange"
+               placeholder="Exchange">
+      </div>
+      <div *ngIf="webUrl.invalid && (webUrl.dirty || webUrl.touched)"
+           class="alert alert-danger">
+
+        <div *ngIf="webUrl.errors.required">
+          Exchange is required.
+        </div>
+
+      </div>
+
+      <button (click)="saveCompany();" type="submit" class="btn btn-primary">Save</button>
+
+    </div>
+  </div>

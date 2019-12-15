@@ -9,13 +9,13 @@ namespace Services
 {
     public interface  ICompanyService
     {
-        Task<CompanyViewModel> CreateCompany(CompanyViewModel company);
-        Task<List<CompanyViewModel>> GetCompanys();
+        Task<ResponseObject<CompanyViewModel>> CreateCompany(CompanyViewModel company);
+        Task<ResponseObjects<CompanyViewModel>> GetCompanys();
 
-        void UpdateCompany(CompanyViewModel company);
+        Task<ResponseObject<CompanyViewModel>> UpdateCompany(CompanyViewModel company);
 
-        Task<CompanyViewModel> GetCompanyByIsin(string isin);
+        Task<ResponseObject<CompanyViewModel>> GetCompanyByIsin(string isin);
 
-        Task<CompanyViewModel> GetCompanyById(int id);
+        Task<ResponseObject<CompanyViewModel>> GetCompanyById(int id);
     }
 }

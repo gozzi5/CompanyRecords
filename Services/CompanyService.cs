@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DataAccess;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using Services.Util;
 using Services.ViewModels;
 
 namespace Services
@@ -17,62 +18,176 @@ namespace Services
             _context = context;
 
         }
-      
 
-        public async Task<CompanyViewModel> CreateCompany(CompanyViewModel companyVm) {
 
-            Company company =  MappingToCompany(companyVm);
+        public async Task<ResponseObject<CompanyViewModel>> CreateCompany(CompanyViewModel companyVm)
+        {
+
+            ResponseObject<CompanyViewModel> responseObject = new ViewModels.ResponseObject<CompanyViewModel>();
+
+
+            ////validating company
+            var validation = CompanyValidation.ValidationForCompany(companyVm);
+
+            if (!validation.Valid)
+            {
+
+                responseObject.Message = validation.Message;
+                responseObject.Success = false;
+
+                return responseObject;
+
+            }
+
+            // checking for duplicate isins
+            var checkIsin = await _context.Company.FirstOrDefaultAsync(x => x.ISIN.ToLower() == companyVm.ISIN.ToLower());
+
+            if (checkIsin != null)
+            {
+
+
+                responseObject.Message = "ISIN already exists";
+                responseObject.Success = false;
+
+                return responseObject;
+            }
+
+
+            Company company = MappingToCompany(companyVm);
 
             _context.Company.Add(company);
-             await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-            return MappingToViewModel(company);
+            responseObject.Result = MappingToViewModel(company);
+            responseObject.Success = true;
+
+
+            return responseObject;
         }
-        public async Task<CompanyViewModel> GetCompanyByIsin(string isin)
+        public async Task<ResponseObject<CompanyViewModel>> GetCompanyByIsin(string isin)
         {
+            ResponseObject<CompanyViewModel> responseObject = new ViewModels.ResponseObject<CompanyViewModel>();
 
-            Company company = await _context.Company.FindAsync();
-
-            return MappingToViewModel(company);
-        }
-
-        public async Task<CompanyViewModel> GetCompanyById(int id)
-        {
-
-            Company company = await _context.Company.FindAsync(id);
-
-            return MappingToViewModel(company);
-        }
-
-        public async Task<List<CompanyViewModel>> GetCompanys()
-        {
-            List<Company> companys = await _context.Company.ToListAsync();
-
-
-            return MappingToListViewModel(companys);
-        }
-
-        public  void UpdateCompany(CompanyViewModel companyVm)
-        {
-
-          Company company =  _context.Company.Find(companyVm.Id);
+            Company company = await _context.Company.FirstOrDefaultAsync(x => x.ISIN.ToLower() == isin.ToLower());
 
             if (company != null)
             {
-                _context.Update(company);
-
-                _context.SaveChanges();
+                responseObject.Result = MappingToViewModel(company);
+                responseObject.Success = true;
             }
+            else
+            {
+                responseObject.Success = false;
+                responseObject.Message = "Company not found";
+            }
+
+            return responseObject;
         }
 
-        private  Company  MappingToCompany(CompanyViewModel companyVm) {
+        public async Task<ResponseObject<CompanyViewModel>> GetCompanyById(int id)
+        {
+            ResponseObject<CompanyViewModel> responseObject = new ViewModels.ResponseObject<CompanyViewModel>();
 
 
-            return  new Company
+            Company company = await _context.Company.FirstOrDefaultAsync(x=>x.Id ==id);
+            if (company != null)
             {
+                responseObject.Result = MappingToViewModel(company);
+                responseObject.Success = true;
+            }
+            else
+            {
+
+                responseObject.Success = false;
+                responseObject.Message = "Company not found";
+
+            }
+
+
+            return responseObject;
+        }
+
+        public async Task<ResponseObjects<CompanyViewModel>> GetCompanys()
+        {
+            ResponseObjects<CompanyViewModel> responseObject = new ViewModels.ResponseObjects<CompanyViewModel>();
+            List<Company> companys = await _context.Company.ToListAsync();
+
+            if (companys != null)
+            {
+
+                responseObject.Results = MappingToListViewModel(companys);
+                responseObject.Success = true;
+            }
+            else
+            {
+
+                responseObject.Success = false;
+                responseObject.Message = "No Companies found";
+            }
+
+            return responseObject;
+        }
+
+        public async Task<ResponseObject<CompanyViewModel>> UpdateCompany(CompanyViewModel companyVm)
+        {
+            ResponseObject<CompanyViewModel> responseObject = new ViewModels.ResponseObject<CompanyViewModel>();
+
+            Company company = _context.Company.Find(companyVm.Id);
+
+            ////validating company
+            var validation = CompanyValidation.ValidationForCompany(companyVm);
+
+            if (!validation.Valid)
+            {
+
+                responseObject.Message = validation.Message;
+                responseObject.Success = false;
+                return responseObject;
+            }
+
+            // checking for duplicate isins
+            var checkIsin = await _context.Company.FirstOrDefaultAsync(x => x.ISIN.ToLower() == companyVm.ISIN.ToLower() && x.Id != companyVm.Id);
+
+            if (checkIsin != null)
+            {
+
+
+                responseObject.Message = "ISIN already exists";
+                responseObject.Success = false;
+                return responseObject;
+
+            }
+
+            if (company != null)
+            {
+                company.Name = companyVm.Name;
+                company.Ticker = companyVm.Ticker;
+                company.WebSite = companyVm.WebSite;
+                company.Exchange = companyVm.Exchange;
+                company.ISIN = companyVm.ISIN;
+
+
+                _context.Update(company);
+
+                await _context.SaveChangesAsync();
+            }
+            responseObject.Success = true;
+            responseObject.Result = MappingToViewModel(company);
+
+            return responseObject;
+        }
+
+        private Company MappingToCompany(CompanyViewModel companyVm)
+        {
+
+
+            return new Company
+            {
+                Id = companyVm.Id,
                 ISIN = companyVm.ISIN,
                 Ticker = companyVm.Ticker,
                 Name = companyVm.Name,
+                Exchange = companyVm.Exchange,
                 WebSite = companyVm.WebSite
             };
         }
@@ -82,9 +197,11 @@ namespace Services
 
             return new CompanyViewModel
             {
+                Id = company.Id,
                 ISIN = company.ISIN,
                 Ticker = company.Ticker,
                 Name = company.Name,
+                Exchange = company.Exchange,
                 WebSite = company.WebSite
             };
         }
@@ -96,9 +213,11 @@ namespace Services
             {
                 CompanyViewModel companyVm = new CompanyViewModel
                 {
+                    Id = company.Id,
                     ISIN = company.ISIN,
                     Ticker = company.Ticker,
                     Name = company.Name,
+                    Exchange = company.Exchange,
                     WebSite = company.WebSite
                 };
                 companyViewModels.Add(companyVm);
