@@ -4,7 +4,7 @@
 
 # Instructions
 1) Create a database called  CompanyRecordsDataBase 
-2) Change connection string to your DB 
+2) Change connection string to your DB (in the appsettings in the company records project)
 3) EF Code first will build the first migration and create the table
 
 # Test
