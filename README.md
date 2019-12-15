@@ -22,5 +22,5 @@ To run the frontend seperate please check the read me in the output folder.
 
 # Example home page
 
-![GitHub Logo](homepage.png)
+![GitHub Logo](./homepage.PNG)
 Format: ![Alt Text](url)
